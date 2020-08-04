@@ -29,19 +29,12 @@ public class PlaceController extends HttpServlet {
         String content = req.getParameter("content");
         switch (content){
             case "province":
+                //接收省份id
                 String province_idStr = req.getParameter("province_id");
                 int province_id = Integer.parseInt(province_idStr);
-                List<City> cities = locationService.selectCityByProvince(province_id);
-                int cityid = cities.get(0).getCity_id();
-                List<Qu> qus = locationService.selectQuByCity(cityid);
-                List<Object> objects = new ArrayList<Object>();
-                objects.add(cities.size());
-                for(City city:cities){
-                    objects.add(city);
-                }
-                for(Qu qu:qus){
-                    objects.add(qu);
-                }
+                //得到如下list：{市的个数，市，第一个市的区}
+                List<Object> objects = locationService.selectAllByProvince(province_id);
+                //转化为json串
                 JSONArray jsonArray = JSONArray.fromObject(objects);
                 resp.setCharacterEncoding("UTF-8");
                 resp.getWriter().write(jsonArray.toString());
@@ -49,7 +42,7 @@ public class PlaceController extends HttpServlet {
             case "city":
                 String city_idStr = req.getParameter("city_id");
                 int city_id = Integer.parseInt(city_idStr);
-                qus = locationService.selectQuByCity(city_id);
+                List<Qu>qus = locationService.selectQuByCity(city_id);
                 JSONArray qujson = JSONArray.fromObject(qus);
                 resp.setCharacterEncoding("UTF-8");
                 resp.getWriter().write(qujson.toString());
